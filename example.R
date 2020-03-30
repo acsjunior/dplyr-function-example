@@ -44,3 +44,63 @@ custom_summary <- function(dados, variavel, categoria=FALSE) {
 custom_summary(dados = iris, variavel = "Sepal.Width")
 
 custom_summary(dados = iris, variavel = "Sepal.Width", categoria = "Species")
+
+
+
+
+
+ustom_summary <- function(dados, variavel, categoria=FALSE) {
+  out <- dados
+  
+  if(categoria != FALSE) {
+    out <- out %>%
+      group_by(!!sym(categoria))
+  }
+  
+  out <- out %>%
+    summarise(min = min(!!sym(variavel)),
+              q1 = quantile(!!sym(variavel), 0.25),
+              mediana = median(!!sym(variavel)),
+              media = mean(!!sym(variavel)),
+              q3 = quantile(!!sym(variavel), 0.75),
+              max = max(!!sym(variavel)),
+              variancia = var(!!sym(variavel)),
+              d_padrao = sd(!!sym(variavel)),
+              cv = d_padrao / media)
+  
+  return(out)
+}
+
+
+
+
+
+
+custom_summary <- function(dados, variavel, categoria=NULL) {
+  variavel <- rlang::enexpr(variavel)
+  categoria <- rlang::enexpr(categoria)
+  
+  out <- dados
+  
+  if(!is.null(categoria)) {
+    out <- out %>%
+      group_by(!!categoria)
+  }
+  
+  out <- out %>%
+    summarise(min = min(!!variavel),
+              q1 = quantile(!!variavel, 0.25),
+              mediana = median(!!variavel),
+              media = mean(!!variavel),
+              q3 = quantile(!!variavel, 0.75),
+              max = max(!!variavel),
+              variancia = var(!!variavel),
+              d_padrao = sd(!!variavel),
+              cv = d_padrao / media)
+  
+  return(out)
+}
+
+
+custom_summary(iris, Sepal.Length, Species)
+
